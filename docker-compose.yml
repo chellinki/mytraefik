@@ -1,0 +1,17 @@
+version: "3"
+services:
+    magento:
+        image: chellinki/alpine:magento2
+        container_name: "magento234"
+        restart: always
+        networks:
+            - web
+        labels:
+            - traefik.http.routers.magento.rule=Host(`magento.sharaths.com`)
+            - traefik.http.routers.magento.tls=true
+            - traefik.http.routers.magento.tls.certresolver=le
+        volumes:
+            - ./html:/var/www/html
+networks:
+    web:
+        external: true
