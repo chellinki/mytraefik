@@ -1,6 +1,6 @@
 version: "3"
 services:
-    magento:
+    service_name:
         image: chellinki/alpine:magento2
         container_name: "magento234"
         restart: always
@@ -8,9 +8,9 @@ services:
             - web
         tty: true
         labels:
-            - traefik.http.routers.magento.rule=Host(`magento.sharaths.com`)
-            - traefik.http.routers.magento.tls=true
-            - traefik.http.routers.magento.tls.certresolver=le
+            - traefik.http.routers.service_name.rule=Host(`magento.sharaths.com`)
+            - traefik.http.routers.service_name.tls=true
+            - traefik.http.routers.service_name.tls.certresolver=le
         volumes:
             - ./html:/var/www/html
 networks:
