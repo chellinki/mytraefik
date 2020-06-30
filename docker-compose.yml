@@ -6,6 +6,7 @@ services:
         restart: always
         networks:
             - web
+        tty: true
         labels:
             - traefik.http.routers.magento.rule=Host(`magento.sharaths.com`)
             - traefik.http.routers.magento.tls=true
