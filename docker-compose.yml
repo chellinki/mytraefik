@@ -14,7 +14,7 @@ services:
             - traefik.http.routers.service_name-https.service=service_name-https-service
             - traefik.http.services.service_name-https-service.loadbalancer.server.port=80
 
-            - traefik.http.routers.service_name-rmq.rule=Host(`rmq-magento.sharats.com`)
+            - traefik.http.routers.service_name-rmq.rule=Host(`rmq-magento.sharaths.com`)
             - traefik.http.routers.service_name-rmq.tls=true
             - traefik.http.routers.service_name-rmq.tls.certresolver=le
             - traefik.http.routers.service_name-rmq.service=service_name-rmq-service
