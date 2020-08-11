@@ -1,7 +1,7 @@
 version: "3"
 services:
     service_name:
-        image: chellinki/alpine-magento:alpine3.8-php7.2-nginx-mysql5.6-redis-varnish-ssh-cron-rabbitmq3.6.15-jdk11-elasticsearch7.8.1
+        image: chellinki/alpine-magento:alpine3.12-php7.3-nginx-mysql5.6-redis-varnish-ssh-cron-rabbitmq3.7.26-jdk11-elasticsearch7.8.1
         container_name: "magento234"
         restart: always
         networks:
