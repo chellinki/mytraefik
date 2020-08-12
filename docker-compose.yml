@@ -26,6 +26,7 @@ services:
             - traefik.http.routers.service_name-es.service=service_name-es-service
             - traefik.http.services.service_name-es-service.loadbalancer.server.port=9200
         volumes:
+            - ~/composer_cache:/root/.composer/cache
             - ./html:/var/www/html
             - ./database:/var/lib/mysql
             - ./esdata:/usr/share/elasticsearch/data
