@@ -1,21 +1,63 @@
-version: "3"
+version: '3'
+
 services:
-    service_name:
-        image: chellinki/alpine:magento2
-        container_name: "magento234"
+
+    traefik:
+        container_name: traefik
+        image: traefik:v2.2
+        command:
+            - "--api.insecure=true"
+            - "--providers.docker=true"
+            - "--entryPoints.web.address=:80"
+            - "--entryPoints.websecure.address=:443"
+            - "--certificatesResolvers.le.acme.email=update@gmail.com"
+            - "--certificatesResolvers.le.acme.storage=acme.json"
+            - "--certificatesResolvers.le.acme.tlsChallenge=true"
+            - "--certificatesResolvers.le.acme.httpChallenge=true"
+            - "--certificatesResolvers.le.acme.httpChallenge.entryPoint=web"
+            - "--api.dashboard=true"
+#            - "--certificatesResolvers.le.acme.domains.main=sharaths.com"
+            - "--metrics.prometheus=true"
+            - "--metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000"
+            - "--metrics.prometheus.addEntryPointsLabels=true"
+            - "--metrics.prometheus.addServicesLabels=true"
+            - "--entryPoints.metrics.address=:8082"
+            - "--metrics.prometheus.entryPoint=metrics"
+            - "--accesslog=true"
+            - "--accesslog.filepath=./access.log"
+            - "--accesslog.bufferingsize=100"
+            - "--accesslog.format=json"
+            - "--accesslog.filters.statuscodes=200,300-302"
+            - "--tracing.servicename=tracing"
+            - "--tracing.jaeger.localagenthostport=12.0.0.1:6831"
+            - "--tracing.jaeger.samplingparam=1.0"
+            - "--tracing.jaeger.samplingserverurl=http://12.0.0.1:5778/sampling"
+            - "--tracing.jaeger.samplingtype=const"
         restart: always
+        ports:
+            - 80:80
+            - 443:443
+            - 8080:8080
         networks:
             - web
-        tty: true
-        labels:
-            - traefik.http.routers.service_name.rule=Host(`magento.sharaths.com`)
-            - traefik.http.routers.service_name.tls=true
-            - traefik.http.routers.service_name.tls.certresolver=le
-            - traefik.http.services.magento.loadbalancer.server.port=80
         volumes:
-            - ./html:/var/www/html
-            - ./database:/var/lib/mysql
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./acme.json:/acme.json # touch acme.json; chmod 600 acme.json
+            - ./logs/access.log:/access.log # mkdir logs; touch logs/access.log; chmod 644 logs/access.log
+        labels:
+            # Redirect all HTTP to HTTPS permanently
+            - traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)
+            - traefik.http.routers.http_catchall.entrypoints=web
+            - traefik.http.routers.http_catchall.middlewares=https_redirect
+            - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
+            - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
+            - traefik.http.routers.traefik.rule=Host(`traefik.sharaths.com`)
+            - traefik.http.routers.traefik.tls=true
+            - traefik.http.routers.traefik.tls.certresolver=le
+            - traefik.http.services.traefik.loadbalancer.server.port=8080
+            - traefik.http.routers.traefik.middlewares=auth
+            - traefik.http.middlewares.auth.basicauth.users=test:$$apr1$$irto0e2s$$JO/VDA4hV24TyrAhgee340
+
 networks:
     web:
         external: true
-
